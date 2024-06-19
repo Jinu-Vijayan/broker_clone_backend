@@ -1,5 +1,7 @@
+const { ErrorHandler } = require("../middleware/ErrorHandler");
 const { UserModel } = require("../models/User.Model");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const signup = async (req,res,next) =>{
     try{
@@ -21,6 +23,7 @@ const signup = async (req,res,next) =>{
         await newUser.save();
 
         res.status(201).json({
+            success : true,
             message : "user created"
         })
     } catch (err) {
@@ -28,6 +31,43 @@ const signup = async (req,res,next) =>{
     }
 }
 
+const signin = async (req,res,next) => {
+
+    try{
+
+        const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+        const {email, password} = req.body;
+        const validUser = await UserModel.findOne({email});
+
+        if(!validUser){
+            return next(ErrorHandler(401,"Wrong Credentials"))
+        }
+
+        const validPassword = bcrypt.compare(password,validUser.password);
+
+        if(!validPassword){
+            return next(ErrorHandler(401,"Wrong Credentials"))
+        }
+
+        const token = jwt.sign({
+            id : validUser._id
+        },JWT_SECRET_KEY);
+
+        const {password:pass, ...userData} = validUser._doc
+
+        res.cookie("access_token" , token, {httpOnly: true}).status(200).json({
+            success : true,
+            message : "Sign in successful",
+            validUser : userData
+        })
+
+    }catch(err){
+        next(err)
+    }
+
+}
+
 module.exports = {
-    signup
+    signup,
+    signin
 }

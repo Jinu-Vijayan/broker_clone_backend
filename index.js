@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const mongoose = require("mongoose");
 const { UserRoute } = require("./routes/User.Route.js");
 const { AuthRoute } = require("./routes/Auth.Route.js");
@@ -11,6 +12,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 // Middle ware
 app.use(express.json());
+app.use(cors());
 
 mongoose.connect(`${MONGO_URI}/broker`)
 .then(()=>{
