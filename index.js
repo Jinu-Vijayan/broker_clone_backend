@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser")
 const { UserRoute } = require("./routes/User.Route.js");
 const { AuthRoute } = require("./routes/Auth.Route.js");
 require("dotenv").config();
@@ -13,6 +14,7 @@ const MONGO_URI = process.env.MONGO_URI;
 // Middle ware
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 mongoose.connect(`${MONGO_URI}/broker`)
 .then(()=>{
@@ -28,7 +30,7 @@ app.use("/api/auth",AuthRoute);
 app.use((err,req,res,next)=>{
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal server error occured";
-    
+
     return res.status(statusCode).json({
         success : false,
         statusCode,

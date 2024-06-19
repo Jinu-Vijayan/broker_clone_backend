@@ -43,9 +43,10 @@ const signin = async (req,res,next) => {
             return next(ErrorHandler(401,"Wrong Credentials"))
         }
 
-        const validPassword = bcrypt.compare(password,validUser.password);
+        const validPassword = bcrypt.compareSync(password,validUser.password);
 
         if(!validPassword){
+            
             return next(ErrorHandler(401,"Wrong Credentials"))
         }
 
