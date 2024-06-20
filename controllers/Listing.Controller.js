@@ -1,3 +1,4 @@
+const { ErrorHandler } = require("../middleware/ErrorHandler.js");
 const { ListingModel } = require("../models/Listing.Model");
 const {uploadFiles} = require("../services/fileUpload.js")
 
@@ -28,6 +29,33 @@ const createListing = async (req,res,next) => {
     }
 };
 
+const deleteListing = async (req,res,next) => {
+    try{
+
+        const {id} = req.params
+        const listing = await ListingModel.findById(id);
+
+        if(!listing){
+            return next(ErrorHandler(404,"Listing not found"))
+        }
+        console.log(req.user.id, listing.userRef)
+        if(req.user.id !== listing.userRef.toString()){
+            return next(ErrorHandler(401,"You can only delete your own listings"));
+        }
+
+        await ListingModel.findByIdAndDelete(id);
+
+        res.status(200).json({
+            success : true,
+            message : "Listing deleted"
+        })
+
+    }catch(err){
+        next(err);
+    }
+}
+
 module.exports = {
-    createListing
+    createListing,
+    deleteListing
 }
