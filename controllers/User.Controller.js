@@ -79,8 +79,33 @@ const getListing = async (req,res,next) => {
     }
 }
 
+const getUser = async (req,res,next) => {
+    try{
+
+        const {id} = req.params;
+        const user = await UserModel.findById(id);
+
+        if(!user){
+            return next(ErrorHandler(404,"User not found"));
+        }
+
+        const {password:pass, ...userData} = user._doc;
+
+        res.status(200).json({
+            success: true,
+            message : "Data feched",
+            userData
+        })
+
+        res.status()
+    }catch(err){
+        next(err);
+    }
+}
+
 module.exports = {
     updateUser,
     deleteUser,
-    getListing
+    getListing,
+    getUser
 }
