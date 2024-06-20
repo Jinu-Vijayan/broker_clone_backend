@@ -51,7 +51,7 @@ const listingSchema = new mongoose.Schema({
     },
     userRef : {
         type : mongoose.Schema.ObjectId,
-        required : [true,"userREf is a required field"],
+        required : [true,"userRef is a required field"],
         ref : "users"
     }
 },{

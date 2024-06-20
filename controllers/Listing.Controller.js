@@ -4,15 +4,20 @@ const {uploadFiles} = require("../services/fileUpload.js")
 const createListing = async (req,res,next) => {
     try{
 
+        
         const results = await uploadFiles(req);
 
         const imageUrls = [];
+
         for(const data of results){
             imageUrls.push(data.secure_url)
         };
 
         req.body.imageUrls = imageUrls;
-        const newListing = await ListingModel.create(req.body);
+        req.body.userRef = req.user.id;
+        const newListData = {...req.body};
+
+        const newListing = await ListingModel.create(newListData);
         res.status(201).json({
             success : true,
             message : "Listing created successfuly",
