@@ -1,6 +1,7 @@
 const { ErrorHandler } = require("../middleware/ErrorHandler");
 const bcrypt = require("bcrypt");
 const { UserModel } = require("../models/User.Model");
+const { ListingModel } = require("../models/Listing.Model");
 
 const updateUser = async (req,res,next) => {
     try{
@@ -54,7 +55,32 @@ const deleteUser = async (req,res,next) => {
     }
 }
 
+const getListing = async (req,res,next) => {
+    try{
+        
+        const {id} = req.params;
+
+        if(req.user.id !== id){
+            return next(ErrorHandler(401,"You can only view your own listings"))
+        }
+
+        const listing = await ListingModel.find({userRef : id})
+
+        res.status(200).json({
+            success : true,
+            message : "Data fetched",
+            data : listing
+        })
+
+    }catch(err){
+
+        next(err);
+
+    }
+}
+
 module.exports = {
     updateUser,
-    deleteUser
+    deleteUser,
+    getListing
 }
