@@ -71,19 +71,20 @@ const updateListing = async (req,res,next) => {
             return next(ErrorHandler(401,"You can only delete your own listings"));
         };
 
+        const imageUrls = listing.imageUrls;
+
         if(req.files.length > 0){
 
             const results = await uploadFiles(req);
-    
-            const imageUrls = listing.imageUrls;
     
             for(const data of results){
                 imageUrls.push(data.secure_url)
             };
     
-            req.body.imageUrls = imageUrls;
             
         }
+
+        req.body.imageUrls = imageUrls;
 
         // req.body.userRef = req.user.id;
         const updatedListData = {...req.body};
@@ -101,8 +102,29 @@ const updateListing = async (req,res,next) => {
     }
 }
 
+const getListingById = async (req,res,next) => {
+    try{
+
+        const {id} = req.params;
+        const listing = await ListingModel.findById(id);
+        if(!listing){
+            return next(ErrorHandler(404, "Listing not found"));
+        };
+
+        res.status(200).json({
+            success : true,
+            message : "Listing fetched",
+            data : listing
+        })
+
+    }catch(err){
+        next(err)
+    }
+}
+
 module.exports = {
     createListing,
     deleteListing,
-    updateListing
+    updateListing,
+    getListingById
 }
