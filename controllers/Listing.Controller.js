@@ -127,7 +127,7 @@ const getAllListings = async (req,res,next) => {
 
         const limit = parseInt(req.query.limit) || 9;
         const startIndex = parseInt(req.query.startIndex) || 0;
-        const serachTerm = req.query.serachTerm || "";
+        const searchTerm = req.query.searchTerm || "";
         const sort = req.query.sort || "createAt";
         const order = req.query.order || "desc";
         let offer = req.query.offer;
@@ -152,7 +152,7 @@ const getAllListings = async (req,res,next) => {
         }}
 
         const listing = await ListingModel.find({
-            name : {$regex : serachTerm , $options : 'i'},
+            name : {$regex : searchTerm , $options : 'i'},
             offer,
             type,
             furnished,
